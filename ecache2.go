@@ -47,12 +47,13 @@ type value struct {
 
 // Hashable is a constraint for key types that can be hashed for sharding
 type Hashable interface {
-	string | int64 | int32 | int | uint64 | uint32 | uint
+	string | int64 | int32 | int | uint64 | uint32 | uint | [2]int64 | [2]int32 | [2]int | [2]uint64 | [2]uint32 | [2]uint
 }
 
 // hashKey computes the hash for sharding based on key type
 // For string: uses BKRD hash
 // For integer types: directly uses the key value
+// For [2]int64: uses XOR of both values for better distribution
 func hashKey[K Hashable](key K, mask int32) int32 {
 	switch k := any(key).(type) {
 	case string:
@@ -69,6 +70,24 @@ func hashKey[K Hashable](key K, mask int32) int32 {
 		return int32(k) & mask
 	case uint:
 		return int32(k) & mask
+	case [2]int64:
+		// Use XOR of both values for better distribution
+		return int32(k[0]^k[1]) & mask
+	case [2]int32:
+		// Use XOR of both values for better distribution
+		return (k[0] ^ k[1]) & mask
+	case [2]int:
+		// Use XOR of both values for better distribution
+		return int32(k[0]^k[1]) & mask
+	case [2]uint64:
+		// Use XOR of both values for better distribution
+		return int32(k[0]^k[1]) & mask
+	case [2]uint32:
+		// Use XOR of both values for better distribution
+		return int32(k[0]^k[1]) & mask
+	case [2]uint:
+		// Use XOR of both values for better distribution
+		return int32(k[0]^k[1]) & mask
 	default:
 		// fallback: should not happen with Hashable constraint
 		return 0

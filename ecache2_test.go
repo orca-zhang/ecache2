@@ -641,3 +641,187 @@ func TestForIssue7(t *testing.T) {
 	}
 	wg.Wait()
 }
+
+func TestCacheInt64Pair(t *testing.T) {
+	// Test with [2]int64 keys
+	lc := NewLRUCache[[2]int64](2, 3, time.Second)
+
+	// Create some test keys
+	key1 := [2]int64{1, 2}
+	key2 := [2]int64{3, 4}
+	key3 := [2]int64{5, 6}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+
+	// Test update
+	lc.Put(key1, "value1-updated")
+	if v, ok := lc.Get(key1); !ok || v != "value1-updated" {
+		t.Error("case 3 failed")
+	}
+
+	// Test PutInt64 and GetInt64
+	lc.PutInt64(key3, int64(123))
+	if v, ok := lc.GetInt64(key3); !ok || v != int64(123) {
+		t.Error("case 4 failed")
+	}
+
+	// Test Del
+	lc.Del(key2)
+	if _, ok := lc.Get(key2); ok {
+		t.Error("case 5 failed")
+	}
+	if v, ok := lc.Get(key1); !ok || v != "value1-updated" {
+		t.Error("case 6 failed")
+	}
+}
+
+func TestCacheInt64PairLRU2(t *testing.T) {
+	// Test that LRU2 can be created and basic operations work
+	lc := NewLRUCache[[2]int64](1, 3, time.Second).LRU2(1)
+	key1 := [2]int64{1, 2}
+	key2 := [2]int64{3, 4}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+}
+
+func TestCacheInt32Pair(t *testing.T) {
+	// Test with [2]int32 keys
+	lc := NewLRUCache[[2]int32](2, 3, time.Second)
+
+	// Create some test keys
+	key1 := [2]int32{1, 2}
+	key2 := [2]int32{3, 4}
+	key3 := [2]int32{5, 6}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+
+	// Test update
+	lc.Put(key1, "value1-updated")
+	if v, ok := lc.Get(key1); !ok || v != "value1-updated" {
+		t.Error("case 3 failed")
+	}
+
+	// Test PutInt64 and GetInt64
+	lc.PutInt64(key3, int64(123))
+	if v, ok := lc.GetInt64(key3); !ok || v != int64(123) {
+		t.Error("case 4 failed")
+	}
+
+	// Test Del
+	lc.Del(key2)
+	if _, ok := lc.Get(key2); ok {
+		t.Error("case 5 failed")
+	}
+	if v, ok := lc.Get(key1); !ok || v != "value1-updated" {
+		t.Error("case 6 failed")
+	}
+}
+
+func TestCacheInt32PairLRU2(t *testing.T) {
+	// Test that LRU2 can be created and basic operations work
+	lc := NewLRUCache[[2]int32](1, 3, time.Second).LRU2(1)
+	key1 := [2]int32{1, 2}
+	key2 := [2]int32{3, 4}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+}
+
+func TestCacheIntPair(t *testing.T) {
+	// Test with [2]int keys
+	lc := NewLRUCache[[2]int](2, 3, time.Second)
+	key1 := [2]int{1, 2}
+	key2 := [2]int{3, 4}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+}
+
+func TestCacheUint64Pair(t *testing.T) {
+	// Test with [2]uint64 keys
+	lc := NewLRUCache[[2]uint64](2, 3, time.Second)
+	key1 := [2]uint64{1, 2}
+	key2 := [2]uint64{3, 4}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+}
+
+func TestCacheUint32Pair(t *testing.T) {
+	// Test with [2]uint32 keys
+	lc := NewLRUCache[[2]uint32](2, 3, time.Second)
+	key1 := [2]uint32{1, 2}
+	key2 := [2]uint32{3, 4}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+}
+
+func TestCacheUintPair(t *testing.T) {
+	// Test with [2]uint keys
+	lc := NewLRUCache[[2]uint](2, 3, time.Second)
+	key1 := [2]uint{1, 2}
+	key2 := [2]uint{3, 4}
+
+	lc.Put(key1, "value1")
+	lc.Put(key2, "value2")
+
+	if v, ok := lc.Get(key1); !ok || v != "value1" {
+		t.Error("case 1 failed")
+	}
+	if v, ok := lc.Get(key2); !ok || v != "value2" {
+		t.Error("case 2 failed")
+	}
+}

@@ -38,8 +38,8 @@
 - 🚀  Extremely easy, ultra fast and  concurrency-safe
 - 🌈  Support both `LRU` mode and  [`LRU-2`](#LRU-2-mode) mode inside
 - 🦖  [Extra plugin](#Distributed-Consistency-Plugin) that support distributed consistency
-- 🎯 **Generic Support**: Supports multiple key types (string, int64, int32, int, uint64, uint32, uint)
-- ⚡ **Intelligent Hashing**: String keys use BKRD hashing, while integer keys use direct value partitioning (no hashing calculation required).
+- 🎯 **Generic Support**: Supports multiple key types (string, int64, int32, int, uint64, uint32, uint, [2]int64, [2]int32, [2]int, [2]uint64, [2]uint32, [2]uint)
+- ⚡ **Intelligent Hashing**: String keys use BKRD hashing, integer keys use direct value partitioning (no hashing calculation), composite keys use XOR partitioning
 
 ## Benchmarks
 
@@ -214,8 +214,17 @@ import (
 
 #### Definition (almost 5s)
 > Can be placed in any position (global is also OK), it is recommended to define nearby
+> 
+> **Generic Version**: Supports multiple key types, string keys use BKRD hash, integer keys use direct value sharding
 ``` go
-var c = ecache2.NewLRUCache(16, 200, 10 * time.Second)
+// string key - uses BKRD hash
+var c = ecache2.NewLRUCache[string](16, 200, 10 * time.Second)
+
+// int64 key - uses key value directly for sharding (no BKRD hash)
+var c2 = ecache2.NewLRUCache[int64](16, 200, 10 * time.Second)
+
+// int32 key - same as int64, no BKRD hash
+var c3 = ecache2.NewLRUCache[int32](16, 200, 10 * time.Second)
 ```
 
 #### Put Item (almost 5s)
@@ -278,11 +287,73 @@ c.Del("uid1")
 
 ## Special Scenarios
 
-### integer key, integer value and bytes value
-``` go
-// integer key
-c.Put(strconv.FormatInt(d, 10), o) // d is type of `int64`
+### Generic Key Type Support
 
+ecache2 supports multiple key types, integer type keys require no hash calculation, providing better performance:
+
+**Supported key types:**
+- `string` - uses BKRD hash for sharding
+- `int64`, `int32`, `int` - uses key value directly for sharding (no BKRD hash)
+- `uint64`, `uint32`, `uint` - uses key value directly for sharding (no BKRD hash)
+- `[2]int64` - pair of int64 keys, uses XOR of both values for sharding
+- `[2]int32` - pair of int32 keys, uses XOR of both values for sharding
+- `[2]int` - pair of int keys, uses XOR of both values for sharding
+- `[2]uint64` - pair of uint64 keys, uses XOR of both values for sharding
+- `[2]uint32` - pair of uint32 keys, uses XOR of both values for sharding
+- `[2]uint` - pair of uint keys, uses XOR of both values for sharding
+
+``` go
+// string key - uses BKRD hash
+var cStr = ecache2.NewLRUCache[string](16, 200, 10 * time.Second)
+cStr.Put("uid1", userInfo)
+
+// int64 key - uses key value directly for sharding, no BKRD hash
+var cInt64 = ecache2.NewLRUCache[int64](16, 200, 10 * time.Second)
+cInt64.Put(int64(12345), userInfo)
+if v, ok := cInt64.Get(int64(12345)); ok {
+    // use v
+}
+
+// int32 key - same as int64, direct value sharding
+var cInt32 = ecache2.NewLRUCache[int32](16, 200, 10 * time.Second)
+cInt32.Put(int32(456), userInfo)
+
+// [2]int64 key - pair of int64 keys, suitable for composite key scenarios (e.g., user_id + item_id)
+var cPair64 = ecache2.NewLRUCache[[2]int64](16, 200, 10 * time.Second)
+key := [2]int64{12345, 67890} // user_id, item_id
+cPair64.Put(key, userInfo)
+if v, ok := cPair64.Get(key); ok {
+    // use v
+}
+
+// [2]int32 key - pair of int32 keys
+var cPair32 = ecache2.NewLRUCache[[2]int32](16, 200, 10 * time.Second)
+key32 := [2]int32{123, 456}
+cPair32.Put(key32, userInfo)
+
+// [2]int key - pair of int keys
+var cPairInt = ecache2.NewLRUCache[[2]int](16, 200, 10 * time.Second)
+keyInt := [2]int{123, 456}
+cPairInt.Put(keyInt, userInfo)
+
+// [2]uint64 key - pair of uint64 keys
+var cPairU64 = ecache2.NewLRUCache[[2]uint64](16, 200, 10 * time.Second)
+keyU64 := [2]uint64{123, 456}
+cPairU64.Put(keyU64, userInfo)
+
+// [2]uint32 key - pair of uint32 keys
+var cPairU32 = ecache2.NewLRUCache[[2]uint32](16, 200, 10 * time.Second)
+keyU32 := [2]uint32{123, 456}
+cPairU32.Put(keyU32, userInfo)
+
+// [2]uint key - pair of uint keys
+var cPairU = ecache2.NewLRUCache[[2]uint](16, 200, 10 * time.Second)
+keyU := [2]uint{123, 456}
+cPairU.Put(keyU, userInfo)
+```
+
+### integer value and bytes value
+``` go
 // integer value
 c.PutInt64("uid1", int64(1))
 if d, ok := c.GetInt64("uid1"); ok {
@@ -524,6 +595,10 @@ dist.OnDel("user", "uid1") // user is name of pool, uid1 is the key that want to
    - PS: All other versions I implemented ([go](https://github.com/orca-zhang/lrucache) / [c++](https://github.com/ez8-co/linked_hash) / [js](https://github.com/orca-zhang/ecache22js)) in leetcode are solutions beats 100% submissions.
 - Second layer includes bucketing strategy, concurrency control, and expiration control (it will automatically adapt to power-of-two buckets to facilitate mask calculation)
 - The 2.5 layer implements the `LRU-2` ability in a very simple way, the code does not exceed 20 lines, directly look at the source code (search for the keyword `LRU-2`)
+- **Layer 3 (ecache2 new)**: Generic implementation based on Go generics, supports multiple key types
+  - string key: uses BKRD hash for sharding
+  - integer keys (int64, int32, int, uint64, uint32, uint): uses key value directly for sharding, no hash calculation required, better performance
+  - composite keys ([2]int64, [2]int32, [2]int, [2]uint64, [2]uint32, [2]uint): uses XOR of both values for sharding, suitable for composite key scenarios
 
 ### What is LRU
 
