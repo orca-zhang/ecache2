@@ -30,11 +30,11 @@
     <img src="https://img.shields.io/badge/benchmark-click--me-brightgreen.svg?style=flat"/>
   </a>
 </p>
-<p align="center">一款极简设计、高性能、并发安全、支持分布式一致性的轻量级内存缓存</p>
+<p align="center">一款极简设计、高性能、并发安全、支持分布式一致性的轻量级泛型内存缓存</p>
 
 ## 特性
 
-- 🤏 代码量<350行、30s完成接入
+- 🤏 代码量<360行、30s完成接入
 - 🚀 高性能、极简设计、并发安全
 - 🌈 支持`LRU` 和 [`LRU-2`](#LRU-2模式)两种模式
 - 🦖 额外[小组件](#分布式一致性组件)支持分布式一致性

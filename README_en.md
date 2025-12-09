@@ -30,11 +30,11 @@
     <img src="https://img.shields.io/badge/benchmark-click--me-brightgreen.svg?style=flat"/>
   </a>
 </p>
-<p align="center">Extremely easy, ultra fast, concurrency-safe and support distributed consistency.</p>
+<p align="center">Extremely easy, ultra fast, concurrency-safe and support distributed consistency generic LRU cache.</p>
 
 ## Features
 
-- 🤏  Less than 300 lines, cost only ~30s to assemble
+- 🤏  Less than 360 lines, cost only ~30s to assemble
 - 🚀  Extremely easy, ultra fast and  concurrency-safe
 - 🌈  Support both `LRU` mode and  [`LRU-2`](#LRU-2-mode) mode inside
 - 🦖  [Extra plugin](#Distributed-Consistency-Plugin) that support distributed consistency
