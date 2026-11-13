@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="/go.mod#L3" alt="go version">
-    <img src="https://img.shields.io/badge/go%20version-%3E=1.11-brightgreen?style=flat"/>
+    <img src="https://img.shields.io/badge/go%20version-%3E=1.22-brightgreen?style=flat"/>
   </a>
   <a href="https://goreportcard.com/badge/github.com/orca-zhang/ecache2" alt="goreport">
     <img src="https://goreportcard.com/badge/github.com/orca-zhang/ecache2>
@@ -39,7 +39,7 @@
 - 🌈  Support both `LRU` mode and  [`LRU-2`](#LRU-2-mode) mode inside
 - 🦖  [Extra plugin](#Distributed-Consistency-Plugin) that support distributed consistency
 - 🎯 **Generic Support**: Supports multiple key types (string, int64, int32, int, uint64, uint32, uint, [2]int64, [2]int32, [2]int, [2]uint64, [2]uint32, [2]uint)
-- ⚡ **Intelligent Hashing**: String keys use BKRD hashing, integer keys use direct value partitioning (no hashing calculation), composite keys use XOR partitioning
+- ⚡ **Intelligent Hashing**: String keys use XXH3-64 hashing, integer keys use direct value partitioning (no hashing calculation), composite keys use XOR partitioning
 
 ## Benchmarks
 
@@ -215,15 +215,15 @@ import (
 #### Definition (almost 5s)
 > Can be placed in any position (global is also OK), it is recommended to define nearby
 > 
-> **Generic Version**: Supports multiple key types, string keys use BKRD hash, integer keys use direct value sharding
+> **Generic Version**: Supports multiple key types, string keys use XXH3-64 hash, integer keys use direct value sharding
 ``` go
-// string key - uses BKRD hash
+// string key - uses XXH3-64 hash
 var c = ecache2.NewLRUCache[string](16, 200, 10 * time.Second)
 
-// int64 key - uses key value directly for sharding (no BKRD hash)
+// int64 key - uses key value directly for sharding (no XXH3-64 hash)
 var c2 = ecache2.NewLRUCache[int64](16, 200, 10 * time.Second)
 
-// int32 key - same as int64, no BKRD hash
+// int32 key - same as int64, no XXH3-64 hash
 var c3 = ecache2.NewLRUCache[int32](16, 200, 10 * time.Second)
 ```
 
@@ -292,9 +292,9 @@ c.Del("uid1")
 ecache2 supports multiple key types, integer type keys require no hash calculation, providing better performance:
 
 **Supported key types:**
-- `string` - uses BKRD hash for sharding
-- `int64`, `int32`, `int` - uses key value directly for sharding (no BKRD hash)
-- `uint64`, `uint32`, `uint` - uses key value directly for sharding (no BKRD hash)
+- `string` - uses XXH3-64 hash for sharding
+- `int64`, `int32`, `int` - uses key value directly for sharding (no XXH3-64 hash)
+- `uint64`, `uint32`, `uint` - uses key value directly for sharding (no XXH3-64 hash)
 - `[2]int64` - pair of int64 keys, uses XOR of both values for sharding
 - `[2]int32` - pair of int32 keys, uses XOR of both values for sharding
 - `[2]int` - pair of int keys, uses XOR of both values for sharding
@@ -303,11 +303,11 @@ ecache2 supports multiple key types, integer type keys require no hash calculati
 - `[2]uint` - pair of uint keys, uses XOR of both values for sharding
 
 ``` go
-// string key - uses BKRD hash
+// string key - uses XXH3-64 hash
 var cStr = ecache2.NewLRUCache[string](16, 200, 10 * time.Second)
 cStr.Put("uid1", userInfo)
 
-// int64 key - uses key value directly for sharding, no BKRD hash
+// int64 key - uses key value directly for sharding, no XXH3-64 hash
 var cInt64 = ecache2.NewLRUCache[int64](16, 200, 10 * time.Second)
 cInt64.Put(int64(12345), userInfo)
 if v, ok := cInt64.Get(int64(12345)); ok {
@@ -626,7 +626,7 @@ dist.OnDel("user", "uid1") // user is name of pool, uid1 is the key that want to
 - Second layer includes bucketing strategy, concurrency control, and expiration control (it will automatically adapt to power-of-two buckets to facilitate mask calculation)
 - The 2.5 layer implements the `LRU-2` ability in a very simple way, the code does not exceed 20 lines, directly look at the source code (search for the keyword `LRU-2`)
 - **Layer 3 (ecache2 new)**: Generic implementation based on Go generics, supports multiple key types
-  - string key: uses BKRD hash for sharding
+  - string key: uses XXH3-64 hash for sharding
   - integer keys (int64, int32, int, uint64, uint32, uint): uses key value directly for sharding, no hash calculation required, better performance
   - composite keys ([2]int64, [2]int32, [2]int, [2]uint64, [2]uint32, [2]uint): uses XOR of both values for sharding, suitable for composite key scenarios
 

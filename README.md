@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="/go.mod#L3" alt="go version">
-    <img src="https://img.shields.io/badge/go%20version-%3E=1.18-brightgreen?style=flat"/>
+    <img src="https://img.shields.io/badge/go%20version-%3E=1.22-brightgreen?style=flat"/>
   </a>
   <a href="https://goreportcard.com/badge/github.com/orca-zhang/ecache2" alt="goreport">
     <img src="https://goreportcard.com/badge/github.com/orca-zhang/ecache2">
@@ -39,7 +39,7 @@
 - 🌈 支持`LRU` 和 [`LRU-2`](#LRU-2模式)两种模式
 - 🦖 额外[小组件](#分布式一致性组件)支持分布式一致性
 - 🎯 **泛型支持**：支持多种 key 类型（string、int64、int32、int、uint64、uint32、uint、[2]int64、[2]int32、[2]int、[2]uint64、[2]uint32、[2]uint）
-- ⚡ **智能哈希**：string key 使用 BKRD hash，整数 key 直接使用值分片（无需哈希计算）
+- ⚡ **智能哈希**：string key 使用 XXH3-64 hash，整数 key 直接使用值分片（无需哈希计算）
 
 ## 基准性能
 
@@ -215,15 +215,15 @@ import (
 #### 定义实例（预计5秒）
 > 可以放置在任意位置（全局也可以），建议就近定义
 > 
-> **泛型版本**：支持多种 key 类型，string key 使用 BKRD hash，整数 key 直接使用值分片
+> **泛型版本**：支持多种 key 类型，string key 使用 XXH3-64 hash，整数 key 直接使用值分片
 ``` go
-// string key - 使用 BKRD hash
+// string key - 使用 XXH3-64 hash
 var c = ecache2.NewLRUCache[string](16, 200, 10 * time.Second)
 
-// int64 key - 不使用 BKRD hash，直接使用 key 值分片（性能更优）
+// int64 key - 不使用 XXH3-64 hash，直接使用 key 值分片（性能更优）
 var c2 = ecache2.NewLRUCache[int64](16, 200, 10 * time.Second)
 
-// int32 key - 同样不使用 BKRD hash
+// int32 key - 同样不使用 XXH3-64 hash
 var c3 = ecache2.NewLRUCache[int32](16, 200, 10 * time.Second)
 ```
 
@@ -292,9 +292,9 @@ c.Del("uid1")
 ecache2 支持多种 key 类型，整数类型 key 无需哈希计算，性能更优：
 
 **支持的 key 类型：**
-- `string` - 使用 BKRD hash 进行分片
-- `int64`, `int32`, `int` - 直接使用 key 值分片（无需 BKRD hash）
-- `uint64`, `uint32`, `uint` - 直接使用 key 值分片（无需 BKRD hash）
+- `string` - 使用 XXH3-64 hash 进行分片
+- `int64`, `int32`, `int` - 直接使用 key 值分片（无需 XXH3-64 hash）
+- `uint64`, `uint32`, `uint` - 直接使用 key 值分片（无需 XXH3-64 hash）
 - `[2]int64` - 双 int64 key，使用两个值的异或进行分片
 - `[2]int32` - 双 int32 key，使用两个值的异或进行分片
 - `[2]int` - 双 int key，使用两个值的异或进行分片
@@ -303,11 +303,11 @@ ecache2 支持多种 key 类型，整数类型 key 无需哈希计算，性能�
 - `[2]uint` - 双 uint key，使用两个值的异或进行分片
 
 ``` go
-// string key - 使用 BKRD hash
+// string key - 使用 XXH3-64 hash
 var cStr = ecache2.NewLRUCache[string](16, 200, 10 * time.Second)
 cStr.Put("uid1", userInfo)
 
-// int64 key - 直接使用 key 值分片，无需 BKRD hash
+// int64 key - 直接使用 key 值分片，无需 XXH3-64 hash
 var cInt64 = ecache2.NewLRUCache[int64](16, 200, 10 * time.Second)
 cInt64.Put(int64(12345), userInfo)
 if v, ok := cInt64.Get(int64(12345)); ok {
@@ -573,8 +573,8 @@ dist.OnDel("user", "uid1") // user是池子名称，uid1是要删除的key
 - 主要变化：
 1. 引入包 `github.com/orca-zhang/ecache2`（已经是新版本）
 2. `ecache2.NewLRUCache` 改为 `ecache2.NewLRUCache[string]`（需要指定 key 类型）
-3. Go 版本要求从 1.11+ 升级到 **1.18+**
-4. 新增特性：支持整数类型 key（int64、int32 等），整数 key 无需 BKRD hash，性能更优
+3. Go 版本要求从 1.11+ 升级到 **1.22+**
+4. 新增特性：支持整数类型 key（int64、int32 等），整数 key 无需 XXH3-64 hash，性能更优
 
 ## 使用[`lrucache`](http://github.com/orca-zhang/lrucache)的老用户升级指导
 
@@ -635,7 +635,7 @@ dist.OnDel("user", "uid1") // user是池子名称，uid1是要删除的key
 - 第2层包了分桶策略、并发控制、过期控制（会自动选择2的幂次个桶，便于掩码计算）
 - 第2.5层用很简单的方式实现了`LRU-2`能力，代码不超过20行，直接看源码（搜关键词`LRU-2`）
 - **第3层（ecache2新增）**：基于 Go 泛型实现，支持多种 key 类型
-  - string key：使用 BKRD hash 进行分片
+  - string key：使用 XXH3-64 hash 进行分片
   - 整数 key（int64、int32、int、uint64、uint32、uint）：直接使用 key 值进行分片，无需哈希计算，性能更优
   - 复合 key（[2]int64、[2]int32、[2]int、[2]uint64、[2]uint32、[2]uint）：使用两个值的异或进行分片，适合复合键场景
 
@@ -673,7 +673,7 @@ dist.OnDel("user", "uid1") // user是池子名称，uid1是要删除的key
 - 没有用内存容量来控制（单个item的大小一般都有预估大小，简单控制个数即可）
 - 分桶策略，自动选择2的幂次个桶（分散锁竞争，2的幂次掩码操作更快）
 - **泛型支持**：支持多种 key 类型（string、int64、int32、int、uint64、uint32、uint、[2]int64、[2]int32、[2]int、[2]uint64、[2]uint32、[2]uint）
-- **智能哈希**：string key 使用 BKRD hash，整数 key 直接使用值分片（无需哈希计算），复合 key 使用异或分片
+- **智能哈希**：string key 使用 XXH3-64 hash，整数 key 直接使用值分片（无需哈希计算），复合 key 使用异或分片
 - 不用虚表头（虽然绕脑一些，但是有20%左右提升）
 - 选择`LRU-2`实现`LRU-K`（实现简单，近乎没有额外损耗）
 - 可以直接存指针（不用序列化，有些场景如果使用`[]byte`那优势大大降低）

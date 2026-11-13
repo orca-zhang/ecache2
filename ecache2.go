@@ -5,6 +5,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/zeebo/xxh3"
 )
 
 var clock, p, n = time.Now().UnixNano(), uint16(0), uint16(1)
@@ -21,13 +23,6 @@ func init() {
 			time.Sleep(100 * time.Millisecond)
 		}
 	}()
-}
-
-func hashBKRD(s string) (hash int32) {
-	for i := 0; i < len(s); i++ {
-		hash = hash*131 + int32(s[i])
-	}
-	return hash
 }
 
 func maskOfNextPowOf2(cap uint16) uint32 {
@@ -51,13 +46,13 @@ type Hashable interface {
 }
 
 // hashKey computes the hash for sharding based on key type
-// For string: uses BKRD hash
+// For string: uses XXH3-64 hash
 // For integer types: directly uses the key value
 // For [2]int64: uses XOR of both values for better distribution
 func hashKey[K Hashable](key K, mask int32) int32 {
 	switch k := any(key).(type) {
 	case string:
-		return hashBKRD(k) & mask
+		return int32(xxh3.HashString(k)) & mask
 	case int64:
 		return int32(k) & mask
 	case int32:
@@ -189,7 +184,7 @@ const (
 )
 
 // Cache - generic concurrent cache structure
-// For string keys: uses BKRD hash for sharding
+// For string keys: uses XXH3-64 hash for sharding
 // For integer keys: uses key value directly for sharding (no hash calculation)
 type Cache[K Hashable] struct {
 	locks      []sync.Mutex
@@ -203,7 +198,7 @@ type Cache[K Hashable] struct {
 // `bucketCnt` is buckets that shard items to reduce lock racing
 // `capPerBkt` is length of each bucket, can store `capPerBkt * bucketCnt` count of items in Cache at most
 // optional `expiration` is item alive time (and we only use lazy eviction here), default `0` stands for permanent
-// For string keys: uses BKRD hash for sharding
+// For string keys: uses XXH3-64 hash for sharding
 // For integer keys: uses key value directly for sharding (no hash calculation)
 func NewLRUCache[K Hashable](bucketCnt, capPerBkt uint16, expiration ...time.Duration) *Cache[K] {
 	mask := maskOfNextPowOf2(bucketCnt)
