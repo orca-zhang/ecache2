@@ -5,8 +5,10 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"unsafe"
 
 	"github.com/zeebo/xxh3"
+	"golang.org/x/sys/cpu"
 )
 
 var clock, p, n = time.Now().UnixNano(), uint16(0), uint16(1)
@@ -183,11 +185,19 @@ const (
 	DEL
 )
 
+const cacheLineSize = max(64, unsafe.Sizeof(cpu.CacheLinePad{}))
+
+// Keep independent shard locks on separate cache lines with a power-of-two stride.
+type cacheMutex struct {
+	sync.Mutex
+	_ [cacheLineSize - unsafe.Sizeof(sync.Mutex{})]byte
+}
+
 // Cache - generic concurrent cache structure
 // For string keys: uses XXH3-64 hash for sharding
 // For integer keys: uses key value directly for sharding (no hash calculation)
 type Cache[K Hashable] struct {
-	locks      []sync.Mutex
+	locks      []cacheMutex
 	insts      [][2]*cache[K] // level-0 for normal LRU, level-1 for LRU-2
 	expiration time.Duration
 	on         inspector[K]
@@ -203,7 +213,7 @@ type Cache[K Hashable] struct {
 func NewLRUCache[K Hashable](bucketCnt, capPerBkt uint16, expiration ...time.Duration) *Cache[K] {
 	mask := maskOfNextPowOf2(bucketCnt)
 	c := &Cache[K]{
-		make([]sync.Mutex, mask+1),
+		make([]cacheMutex, mask+1),
 		make([][2]*cache[K], mask+1),
 		0,
 		func(int, K, *interface{}, []byte, int) {},

@@ -1,0 +1,124 @@
+# round 1, order baseline,candidate
+goos: darwin
+goarch: arm64
+pkg: github.com/orca-zhang/ecache2
+cpu: Apple M4 Pro
+BenchmarkGetSerial            	23789592	        15.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-4          	22718607	        14.94 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-8          	23976156	        14.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared            	23721926	        15.56 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-4          	 2991526	       148.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-8          	 2966334	       118.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards            	23987073	        15.01 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-4          	 5714984	        66.59 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-8          	 4477068	        78.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed       	16409479	        22.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-4     	 5691961	        56.27 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-8     	 3042692	       119.9 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards     	34708412	        10.65 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-4   	 6904868	        54.79 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-8   	 4919365	        72.34 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards        	25613281	        14.01 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-4      	 5273236	        67.96 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-8      	 4653086	        75.11 ns/op	       0 B/op	       0 allocs/op
+PASS
+
+# round 2, order candidate,baseline
+goos: darwin
+goarch: arm64
+pkg: github.com/orca-zhang/ecache2
+cpu: Apple M4 Pro
+BenchmarkGetSerial            	23886669	        14.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-4          	24470235	        14.53 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-8          	25401304	        14.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared            	24125856	        15.01 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-4          	 2336294	       148.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-8          	 2909594	       126.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards            	24272866	        14.99 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-4          	 5434600	        66.32 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-8          	 4766043	        79.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed       	16261630	        22.25 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-4     	 4379756	        70.60 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-8     	 2961320	       120.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards     	34422172	        10.15 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-4   	 7118082	        54.16 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-8   	 5230852	        74.10 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards        	25841956	        13.93 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-4      	 5151242	        68.66 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-8      	 4513434	        89.63 ns/op	       0 B/op	       0 allocs/op
+PASS
+
+# round 3, order baseline,candidate
+goos: darwin
+goarch: arm64
+pkg: github.com/orca-zhang/ecache2
+cpu: Apple M4 Pro
+BenchmarkGetSerial            	25791506	        14.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-4          	25944932	        14.30 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-8          	25344750	        14.06 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared            	23456143	        14.99 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-4          	 2405923	       163.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-8          	 2943544	       124.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards            	24273685	        16.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-4          	 4863393	        73.15 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-8          	 4070133	        79.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed       	15829712	        22.49 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-4     	 5900280	        62.70 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-8     	 2964901	       117.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards     	34779388	        10.27 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-4   	 6413481	        60.85 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-8   	 4902792	        73.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards        	25019763	        14.44 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-4      	 5038549	        71.00 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-8      	 4825108	        75.37 ns/op	       0 B/op	       0 allocs/op
+PASS
+
+# round 4, order candidate,baseline
+goos: darwin
+goarch: arm64
+pkg: github.com/orca-zhang/ecache2
+cpu: Apple M4 Pro
+BenchmarkGetSerial            	22516418	        14.84 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-4          	24484450	        14.15 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-8          	25276092	        15.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared            	24294160	        14.84 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-4          	 2401183	       151.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-8          	 2941141	       124.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards            	24359917	        14.91 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-4          	 5139225	        69.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-8          	 4201665	        79.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed       	16239777	        21.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-4     	 6347199	        67.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-8     	 2873773	       116.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards     	35639152	        10.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-4   	 6753898	        54.66 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-8   	 4914742	        75.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards        	25832451	        14.13 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-4      	 5236641	        72.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-8      	 4753194	        76.01 ns/op	       0 B/op	       0 allocs/op
+PASS
+
+# round 5, order baseline,candidate
+goos: darwin
+goarch: arm64
+pkg: github.com/orca-zhang/ecache2
+cpu: Apple M4 Pro
+BenchmarkGetSerial            	25950621	        14.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-4          	25210299	        14.08 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetSerial-8          	25927180	        14.02 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared            	23066386	        15.65 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-4          	 2463782	       154.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShared-8          	 3018027	       123.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards            	14987665	        23.71 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-4          	 5492300	        75.99 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetShards-8          	 4183773	        84.32 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed       	16570102	        22.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-4     	 6008248	        79.00 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetDistributed-8     	 3379948	       122.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards     	36067626	        10.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-4   	 7035108	        59.37 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetIntegerShards-8   	 5031378	        78.92 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards        	25694707	        14.32 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-4      	 4753371	        66.68 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGetPairShards-8      	 4487073	        85.71 ns/op	       0 B/op	       0 allocs/op
+PASS
